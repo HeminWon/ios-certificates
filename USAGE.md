@@ -29,6 +29,87 @@ MATCH_PASSWORD="你的-match-密码" fastlane match adhoc \
   --app_identifier com.example.app
 ```
 
+## 仅使用 xcodebuild 的项目接入
+
+业务项目不需要使用 fastlane 作为打包工具，也可以复用本仓库。
+
+关键点：`fastlane match` 只负责从本仓库拉取、解密并安装签名资产；真正打包仍然可以继续使用 `xcodebuild`。
+
+### 1. 同步签名资产
+
+在执行 `xcodebuild` 之前先运行一次：
+
+```bash
+MATCH_PASSWORD="你的-match-密码" fastlane match adhoc \
+  --readonly \
+  --git_url https://github.com/HeminWon/ios-certificates.git \
+  --git_branch main \
+  --app_identifier com.example.app
+```
+
+如果是 development 构建，把 `adhoc` 改为 `development`。
+
+这一步会把：
+
+- certificate / private key 安装到本机或 CI 的 Keychain
+- provisioning profile 安装到 `~/Library/MobileDevice/Provisioning Profiles/`
+
+### 2. 使用 xcodebuild 打包
+
+建议业务项目使用 Manual Signing，并显式指定 team 和 profile：
+
+```bash
+xcodebuild \
+  -workspace YourApp.xcworkspace \
+  -scheme YourApp \
+  -configuration Release \
+  -destination generic/platform=iOS \
+  -archivePath build/YourApp.xcarchive \
+  DEVELOPMENT_TEAM=YOUR_TEAM_ID \
+  CODE_SIGN_STYLE=Manual \
+  PROVISIONING_PROFILE_SPECIFIER="match AdHoc com.example.app" \
+  archive
+```
+
+导出 ipa：
+
+```bash
+xcodebuild \
+  -exportArchive \
+  -archivePath build/YourApp.xcarchive \
+  -exportPath build/export \
+  -exportOptionsPlist ExportOptions.plist
+```
+
+`ExportOptions.plist` 示例：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key>
+  <string>ad-hoc</string>
+  <key>signingStyle</key>
+  <string>manual</string>
+  <key>teamID</key>
+  <string>YOUR_TEAM_ID</string>
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>com.example.app</key>
+    <string>match AdHoc com.example.app</string>
+  </dict>
+</dict>
+</plist>
+```
+
+### 3. 注意事项
+
+- `xcodebuild` 本身不能直接使用本仓库里的加密文件，必须先解密并安装到 Keychain / Provisioning Profiles 目录。
+- 推荐仍然用 `fastlane match --readonly` 做“签名资产同步”，但不要求业务项目使用 fastlane lanes。
+- 不建议在 CI 中使用 `-allowProvisioningUpdates`，否则可能绕过本仓库直接修改 Apple Developer Portal。
+- wildcard profile 的名称通常是 `match AdHoc *` 或 `match Development *`；明确 bundle id 的 profile 名称通常是 `match AdHoc com.example.app` 或 `match Development com.example.app`。
+
 ## 新增或更新 Profile
 
 优先在临时目录操作，不要在本仓库工作区直接运行 `fastlane match import`。
