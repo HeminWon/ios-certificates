@@ -236,6 +236,7 @@ MATCH_PASSWORD=你的-match-密码 fastlane match adhoc \
 | development | `com.cloud.ai.AICloud` | `profiles/development/Development_com.cloud.ai.AICloud.mobileprovision` |
 | development | `com.verge.AIBrowser` | `profiles/development/Development_com.verge.AIBrowser.mobileprovision` |
 | development | `com.rockship.zzs` | `profiles/development/Development_com.rockship.zzs.mobileprovision` |
+| adhoc | `*` | `profiles/adhoc/AdHoc_*.mobileprovision` |
 | adhoc | `com.cloud.ai.AICloud` | `profiles/adhoc/AdHoc_com.cloud.ai.AICloud.mobileprovision` |
 | adhoc | `com.verge.AIBrowser` | `profiles/adhoc/AdHoc_com.verge.AIBrowser.mobileprovision` |
 | adhoc | `com.rockship.zzs` | `profiles/adhoc/AdHoc_com.rockship.zzs.mobileprovision` |
