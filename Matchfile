@@ -2,6 +2,7 @@ git_url("https://github.com/HeminWon/ios-certificates.git")
 
 storage_mode("git")
 git_branch("main")
+platform("ios")
 
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
 

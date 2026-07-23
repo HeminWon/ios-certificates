@@ -14,6 +14,7 @@
 git_url("https://github.com/HeminWon/ios-certificates.git")
 storage_mode("git")
 git_branch("main")
+platform("ios")
 type("development")
 ```
 
@@ -21,6 +22,7 @@ type("development")
 
 - 证书仓库地址：`https://github.com/HeminWon/ios-certificates.git`
 - 分支：`main`
+- 平台：`ios`
 - 默认类型：`development`
 - 使用 `adhoc` 时通过命令或项目 `Fastfile` 覆盖类型
 
@@ -217,14 +219,26 @@ MATCH_PASSWORD=你的-match-密码 fastlane match adhoc \
 
 创建完成后，日常构建和 CI 再恢复使用 `--readonly`。
 
-## 当前已导入的类型
+## 当前已导入的签名资产
 
 当前仓库已包含：
 
 - development certificate
 - distribution certificate
 - development provisioning profiles
-- ad-hoc provisioning profile
+- ad-hoc provisioning profiles
+
+当前覆盖的 App Identifier：
+
+| 类型 | App Identifier | Profile 文件 |
+| --- | --- | --- |
+| development | `*` | `profiles/development/Development_*.mobileprovision` |
+| development | `com.cloud.ai.AICloud` | `profiles/development/Development_com.cloud.ai.AICloud.mobileprovision` |
+| development | `com.verge.AIBrowser` | `profiles/development/Development_com.verge.AIBrowser.mobileprovision` |
+| development | `com.rockship.zzs` | `profiles/development/Development_com.rockship.zzs.mobileprovision` |
+| adhoc | `com.cloud.ai.AICloud` | `profiles/adhoc/AdHoc_com.cloud.ai.AICloud.mobileprovision` |
+| adhoc | `com.verge.AIBrowser` | `profiles/adhoc/AdHoc_com.verge.AIBrowser.mobileprovision` |
+| adhoc | `com.rockship.zzs` | `profiles/adhoc/AdHoc_com.rockship.zzs.mobileprovision` |
 
 注意：`fastlane match` 对 provisioning profile 的保存路径按 `type + bundle id` 命名。同一个类型下，同一个 bundle id 只能保留一个 profile。
 
